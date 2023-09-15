@@ -1,30 +1,34 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-</script>
+import { ref, computed} from 'vue'
+import PlayPage from "./pages/PlayPage.vue";
+import TopPage from "./pages/TopPage.vue";
+import NotFound from "./pages/NotFound.vue"
+
+const routes = {
+  '/': TopPage,
+  '/play': PlayPage,
+  '/non-existent-path': NotFound
+}
+const currentPath = ref(window.location.hash);
+
+window.addEventListener('hashchange', () => {
+  currentPath.value = window.location.hash
+})
+const currentView = computed(() => {
+  // 取得したurlの#以降のhash値から#を取り除くためにsplice(1)をしている
+  return routes[currentPath.value.slice(1) || '/'] || NotFound
+})
+  </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <header>
+    <a href="#/">TopPage</a> |
+    <a href="#/play">PlayPage</a> |
+    <a href="#/non-existent-path">Broken Link</a>
+  </header>
+  <component :is="currentView" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+
 </style>
